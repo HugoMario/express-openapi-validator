@@ -1,6 +1,6 @@
 # express-openapi-validator
 
-[![](https://travis-ci.org/cdimascio/express-openapi-validator.svg?branch=master)](#) [![](https://img.shields.io/npm/v/express-openapi-validator.svg)](https://www.npmjs.com/package/express-openapi-validator) ![](https://img.shields.io/npm/dm/express-openapi-validator.svg) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) [![All Contributors](https://img.shields.io/badge/all_contributors-11-orange.svg?style=flat-square)](#contributors) [![Greenkeeper badge](https://badges.greenkeeper.io/cdimascio/express-openapi-validator.svg)](https://greenkeeper.io/) [![](https://img.shields.io/gitter/room/cdimascio-oss/community?color=%23eb205a)](https://gitter.im/cdimascio-oss/community) [![](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
+[![](https://travis-ci.org/cdimascio/express-openapi-validator.svg?branch=master)](#) [![](https://img.shields.io/npm/v/express-openapi-validator.svg)](https://www.npmjs.com/package/express-openapi-validator) ![](https://img.shields.io/npm/dm/express-openapi-validator.svg) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) [![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors) [![Greenkeeper badge](https://badges.greenkeeper.io/cdimascio/express-openapi-validator.svg)](https://greenkeeper.io/) [![](https://img.shields.io/gitter/room/cdimascio-oss/community?color=%23eb205a)](https://gitter.im/cdimascio-oss/community) [![](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
 
 **An OpenApi validator for ExpressJS** that automatically validates **API** _**requests**_ and _**responses**_ using an **OpenAPI 3** specification.
 
@@ -16,6 +16,7 @@
 - ✔️ response validation 
 - 👮 security validation / custom security functions
 - 👽 3rd party / custom formats 
+- ✂️  **$ref** support; split specs over multiple files
 - 🎈 file upload
 
 
@@ -312,6 +313,7 @@ new OpenApiValidator(options).install({
   apiSpec: './openapi.yaml',
   validateRequests: true,
   validateResponses: true,
+  ignorePaths: /.*\/pets$/
   unknownFormats: ['phone-number', 'uuid'],
   multerOpts: { ... },
   securityHandlers: {
@@ -387,6 +389,16 @@ Determines whether the validator should validate responses. Also accepts respons
 	  removeAdditional: 'failing'
 	}
 	```
+
+### ▪️ ignorePaths (optional)
+
+Defines a regular expression that determines whether a path(s) should be ignored. Any path which matches the regular expression will not be validated.
+
+The following ignores any path that ends in `/pets`
+
+```
+ignorePaths: /.*\/pets$/
+```
 
 
 ### ▪️ unknownFormats (optional)
@@ -543,7 +555,26 @@ that are _not_ under the base URL—such as pages—will not be validated.
 | `https://api.example.com/v1/users`   | :white_check_mark:         |
 | `https://api.example.com/index.html` | no; not under the base URL |
 
+_**Note** that in some cases, it may be necessary to skip validation for paths under the base url. To do this, use the `ignorePaths` option._
+
 ## FAQ
+
+
+**Q:** I can disallow unknown query parameters with `allowUnknownQueryParameters: false`. How can disallow unknown body parameters?
+
+**A:** Add `additionalProperties: false` when [describing](https://swagger.io/docs/specification/data-models/keywords/) e.g a `requestBody` to ensure that additional properties are not allowed. For example:
+
+  ```yaml
+  Pet:
+  additionalProperties: false
+  required:
+    - name
+  properties:
+    name:
+      type: string
+    type:
+      type: string
+  ```
 
 **Q:** Can I use `express-openapi-validator` with `swagger-ui-express`?
 
@@ -587,6 +618,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/SpencerLawrenceBrown"><img src="https://avatars3.githubusercontent.com/u/7729907?v=4" width="100px;" alt="Spencer Brown"/><br /><sub><b>Spencer Brown</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=SpencerLawrenceBrown" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=SpencerLawrenceBrown" title="Tests">⚠️</a></td>
     <td align="center"><a href="http://www.mixingpixels.com"><img src="https://avatars2.githubusercontent.com/u/4136503?v=4" width="100px;" alt="José Neves"/><br /><sub><b>José Neves</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=rafalneves" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/mk811"><img src="https://avatars1.githubusercontent.com/u/32785388?v=4" width="100px;" alt="mk811"/><br /><sub><b>mk811</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=mk811" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=mk811" title="Tests">⚠️</a></td>
+    <td align="center"><a href="https://github.com/HugoMario"><img src="https://avatars1.githubusercontent.com/u/3266608?v=4" width="100px;" alt="HugoMario"/><br /><sub><b>HugoMario</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=HugoMario" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=HugoMario" title="Tests">⚠️</a></td>
+    <td align="center"><a href="http://row1.ca"><img src="https://avatars3.githubusercontent.com/u/913249?v=4" width="100px;" alt="Rowan Cockett"/><br /><sub><b>Rowan Cockett</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=rowanc1" title="Code">💻</a></td>
   </tr>
 </table>
 
